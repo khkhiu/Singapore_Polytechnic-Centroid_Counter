@@ -28,9 +28,8 @@ directionDelayLookup = [0,80,50,30,20,17,16] #0=stop, higher = slower
 
 #Setting initial values for vars
 #cnt_x to count how many people enterred and exited the room
-cnt_left   = 0
+cnt_left  = 0
 cnt_right = 0
-
     
 print("cam fps", cap.get(cv2.CAP_PROP_FPS))
 #cap.set(cv2.CAP_PROP_CONVERT_RGB, 0)
@@ -82,8 +81,6 @@ esp.connect()
 #allow camera to stablize
 for x in range(20): cap.read()
 
-
-    
 def preprocess_frame(frame):
     #Convert difference into grayscale, 
     #easier to find contours in grayscale
@@ -102,13 +99,10 @@ frame2 = preprocess_frame(frame)
 #while capturing footage
 while(cap.isOpened()):
     frame1 = frame2
-    
-    
     frameStartTicks = cv2.getTickCount()
     ret, frame = cap.read()
     frame2 = preprocess_frame(frame)
     
-
     #absdiff to find absolute difference between 2 frames
     diff = cv2.absdiff(frame1, frame2)
 
@@ -131,10 +125,7 @@ while(cap.isOpened()):
     dilated = cv2.dilate(blurdiff, None, iterations=40)
     #cv2.imshow('dilated',dilated)
     
-    
     #TODO: detect which large portion is moving using contours instead of dilate
-    
-    
     
     display = frame
 
@@ -208,8 +199,7 @@ while(cap.isOpened()):
             #Drawing centroid and rectangle
             display = cv2.circle(display,(cx,cy), 5, (0,0,255), -1)
             display = cv2.rectangle(display,(x,y),(x+w,y+h),(0,255,0),2)            
-            
-            
+              
     #Numbers the centroid 
     for i in persons:
         if (i.state == '0'): i.stationaryFrames = i.stationaryFrames + 1
@@ -221,7 +211,6 @@ while(cap.isOpened()):
     str_right = 'Enter: '+ str(cnt_right)
     str_people = "PEOPLE: " + str(cnt_right - cnt_left)
     
-
     #Setting lines to determine entry and exit points
     display = cv2.polylines(display,[pts_L1],False,line_right_color,thickness=2)
     display = cv2.polylines(display,[pts_L2],False,line_left_color,thickness=2)
