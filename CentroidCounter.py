@@ -1,6 +1,5 @@
 
 ##People counter
-
 #numpy is needed for specifying location fo lines as matrix value is needed, and Python alone cannot accomplish the task
 import numpy as np
 #import CV2 for openCV
@@ -9,30 +8,18 @@ import cv2
 import Person
 #To track time for analytics purposes(to be implemented later, see 'under improvement' section)
 import time
-#for bluetooth
-import esp32ble
-import dummyble
-
 
 #Taking the video input
 cap = cv2.VideoCapture(0)
-#activate camera. This is the first thing to do as camera takes a while to settle down
+#activate camera.
 cap.grab()
 cap.read()
-
-esp = esp32ble.fanDevice('24:0a:c4:af:7b:96')
-#esp = dummyble.fanDevice('24:0a:c4:af:7b:96')
-
-speedLookup = [0,50,100,255] #0=stop, Higher = faster
-directionDelayLookup = [0,80,50,30,20,17,16] #0=stop, higher = slower
 
 #Setting initial values for vars
 #cnt_x to count how many people enterred and exited the room
 cnt_left  = 0
 cnt_right = 0
     
-print("cam fps", cap.get(cv2.CAP_PROP_FPS))
-#cap.set(cv2.CAP_PROP_CONVERT_RGB, 0)
 
 #setting frame height and width of recorded video Using API for video I/O
 #.CAP_PROP_FRAME_WIDTH=3
@@ -45,8 +32,8 @@ FrameAreaThreshold = FrameArea/300
 
 #Lines coordinate for counting
 line_left = int(1*(FrameHeight/5))
-line_right   = int(4*(FrameHeight/5))
-left_limit =   int(.5*(FrameHeight/5))
+line_right = int(4*(FrameHeight/5))
+left_limit = int(.5*(FrameHeight/5))
 right_limit = int(4.5*(FrameHeight/5))
 
 #specifying line colours
@@ -75,8 +62,6 @@ persons = []
 max_p_CentCount = 1
 #Set starting ID for centroid number
 C_id = 1
-
-esp.connect()
 
 #allow camera to stablize
 for x in range(20): cap.read()
@@ -124,8 +109,6 @@ while(cap.isOpened()):
     #Format->[.dilate(src, dst, kernel)]
     dilated = cv2.dilate(blurdiff, None, iterations=40)
     #cv2.imshow('dilated',dilated)
-    
-    #TODO: detect which large portion is moving using contours instead of dilate
     
     display = frame
 
@@ -225,11 +208,8 @@ while(cap.isOpened()):
     #set label at top of video
     cv2.imshow('Feed',display)
 
-    
     peopleEntered = max(cnt_right-cnt_left, 0) #not supposed to be smaller than zero.
-    esp.writeSpeed(speedLookup[min(peopleEntered, len(speedLookup)-1)])
-    esp.writeDirectionDelay(directionDelayLookup[min(peopleEntered, len(directionDelayLookup)-1)])
-    
+  
     #press 'q' to quit
     if cv2.waitKey(1) == ord('q'):
         break
